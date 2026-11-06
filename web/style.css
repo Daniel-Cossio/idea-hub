@@ -1,0 +1,303 @@
+/* ============================================================
+   IdeaHub — Estilos CSS (Tablero Kanban + Vista Dual)
+   ============================================================ */
+
+:root {
+  --bg: #f0f2f5;
+  --card-bg: #fff;
+  --border: #e2e8f0;
+  --primary: #6366f1;
+  --primary-hover: #4f46e4;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --col-inbox: #dbeafe;
+  --col-refining: #fef3c7;
+  --col-agent_ready: #e0e7ff;
+  --col-in_progress: #d1fae5;
+  --col-done: #f0fdf4;
+  --col-archived: #f1f5f9;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* --- Pantallas --- */
+.screen { display: flex; }
+.hidden { display: none !important; }
+
+/* --- Login --- */
+#login-screen {
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.login-card {
+  background: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  text-align: center;
+  width: 340px;
+}
+
+.login-card h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
+.subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+
+#login-form { display: flex; flex-direction: column; gap: 0.75rem; }
+#password-input {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.error { color: #ef4444; font-size: 0.85rem; }
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.btn-primary:hover { background: var(--primary-hover); }
+
+.btn-logout {
+  background: none;
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* --- Header Kanban --- */
+.kanban-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+}
+.kanban-header h1 { font-size: 1.4rem; }
+.header-controls { display: flex; gap: 0.75rem; align-items: center; }
+
+.search-input {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  width: 260px;
+}
+.btn-new { font-size: 0.9rem; padding: 0.5rem 1rem; }
+.btn-logout { margin-left: auto; }
+
+/* --- Kanban Board --- */
+.kanban-board {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  overflow-x: auto;
+  height: calc(100vh - 65px);
+}
+
+.kanban-column {
+  flex: 1;
+  min-width: 200px;
+  max-width: 320px;
+  background: var(--card-bg);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
+.column-icon { font-size: 1.2rem; }
+.column-count { margin-left: auto; font-size: 0.8rem; color: var(--text-muted); background: var(--bg); padding: 0.15rem 0.5rem; border-radius: 99px; }
+
+.column-cards {
+  padding: 0.5rem;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* --- Cards --- */
+.idea-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: box-shadow .15s, transform .15s;
+}
+.idea-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); transform: translateY(-1px); }
+.idea-card .card-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem; }
+.idea-card .card-meta { font-size: 0.78rem; color: var(--text-muted); display: flex; gap: 0.5rem; }
+.card-badge {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Column backgrounds */
+#col-inbox { border-color: var(--col-inbox); }
+#col-refining { border-color: var(--col-refining); }
+#col-agent_ready { border-color: var(--col-agent_ready); }
+#col-in_progress { border-color: var(--col-in_progress); }
+#col-done { border-color: var(--col-done); }
+#col-archived { border-color: var(--col-archived); }
+
+/* --- Dual View --- */
+.dual-view-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dual-view-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+}
+.dual-view-panel {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: 14px;
+  width: 95vw;
+  max-width: 1400px;
+  height: 85vh;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,.15);
+}
+.btn-close-panel {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  font-size: 1rem;
+  z-index: 2;
+}
+
+/* Columna Izquierda - Bitácora */
+.dual-log-column {
+  width: 320px;
+  min-width: 260px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+}
+.dual-log-column h3 { margin-bottom: 0.75rem; font-size: 1.05rem; }
+.log-entries { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.log-entry {
+  padding: 0.5rem;
+  background: var(--bg);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+.log-entry .log-timestamp { font-size: 0.72rem; color: var(--text-muted); }
+.log-entry .log-source { font-size: 0.7rem; color: var(--primary); font-weight: 600; }
+
+.log-form { display: flex; gap: 0.4rem; margin-top: 0.75rem; }
+#log-entry-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+.btn-small {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+}
+
+/* Columna Derecha - Editor */
+.dual-editor-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+}
+.editor-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+}
+.status-select, .priority-select {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.spec-editor {
+  flex: 1;
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 0.9rem;
+  resize: none;
+  line-height: 1.6;
+  line-height: 1.7;
+}
+.editor-actions { margin-top: 0.75rem; display: flex; gap: 0.75rem; }
+
+.btn-ai {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-copy {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: monospace;
+}

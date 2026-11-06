@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IdeaHub — Tablero Kanban</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <!-- Pantalla de Login -->
+  <div id="login-screen" class="screen">
+    <div class="login-card">
+      <h1>🧠 IdeaHub</h1>
+      <p class="subtitle">Gestión de Ideas de Proyectos</p>
+      <form id="login-form">
+        <input type="password" id="password-input" placeholder="Contraseña" required autofocus>
+        <button type="submit" class="btn-primary">Iniciar Sesión</button>
+      </form>
+      <p id="login-error" class="error hidden">Contraseña incorrecta</p>
+    </div>
+  </div>
+
+  <!-- Tablero Kanban -->
+  <div id="kanban-screen" class="screen hidden">
+    <header class="kanban-header">
+      <h1>🧠 IdeaHub</h1>
+      <div class="header-controls">
+        <input type="text" id="search-input" class="search-input" placeholder="Buscar idea... (?q=)" aria-label="Buscar">
+        <button id="btn-new-idea" class="btn-primary btn-new">+ Nueva Idea</button>
+        <button id="btn-logout" class="btn-logout" title="Cerrar sesión">✕</button>
+      </div>
+    </header>
+
+    <main id="kanban-board" class="kanban-board">
+      <div class="kanban-column" data-status="inbox" id="col-inbox">
+        <div class="column-header">
+          <span class="column-icon">📥</span>
+          <h2>Inbox</h2>
+          <span class="column-count">0</span>
+        </div>
+        <div class="column-cards"></div>
+      </div>
+      <div class="kanban-column" data-status="refining" id="col-refining">
+        <div class="column-header">
+          <span class="column-icon">🔍</span>
+          <h2>Refining</h2>
+          <span class="column-count">0</span>
+        </div>
+        <div class="column-cards"></div>
+      </div>
+      <div class="kanban-column" data-status="agent_ready" id="col-agent_ready">
+        <div class="column-header">
+          <span class="column-icon">⚡</span>
+          <h2>Agent Ready</h2>
+          <span class="column-count">0</span>
+        </div>
+        <div class="column-cards"></div>
+      </div>
+      <div class="kanban-column" data-status="in_progress" id="col-in_progress">
+        <div class="column-header">
+          <span class="column-icon">🚀</span>
+          <h2>In Progress</h2>
+          <span class="column-count">0</span>
+        </div>
+        <div class="column-cards"></div>
+      </div>
+      <div class="kanban-column" data-status="done" id="col-done">
+        <div class="column-header">
+          <span class="column-icon">✅</span>
+          <h2>Done</h2>
+          <span class="column-count">0</span>
+        </div>
+        <div class="column-cards"></div>
+      </div>
+      <div class="kanban-column" data-status="archived" id="col-archived">
+        <div class="column-header">
+          <span class="column-icon">📦</span>
+          <h2>Archived</h2>
+          <span class="column-count">0</span>
+        </div>
+        <div class="column-cards"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Panel Vista Dual -->
+  <div id="dual-view" class="dual-view-overlay hidden">
+    <div class="dual-view-backdrop" id="dual-view-backdrop"></div>
+    <div class="dual-view-panel">
+      <button id="btn-close-dual" class="btn-close-panel" title="Cerrar">✕</button>
+
+      <!-- Columna Izquierda: Bitácora -->
+      <aside class="dual-log-column">
+        <h3>📋 Bitácora de Captura</h3>
+        <div id="log-entries" class="log-entries"></div>
+        <form id="log-form" class="log-form">
+          <input type="text" id="log-entry-input" placeholder="Añadir nota rápida..." aria-label="Nueva nota">
+          <button type="submit" class="btn-small">✓</button>
+        </form>
+      </aside>
+
+      <!-- Columna Derecha: Editor -->
+      <section class="dual-editor-column">
+        <div class="editor-controls">
+          <label for="status-select">Estado:</label>
+          <select id="status-select" class="status-select"></select>
+          <label for="priority-select">Prioridad:</label>
+          <select id="priority-select" class="priority-select"></select>
+        </div>
+        <textarea id="spec-editor" class="spec-editor" placeholder="Especificación Markdown..." aria-label="Editor SPEC.md"></textarea>
+        <div class="editor-actions">
+          <button id="btn-ai-structure" class="btn-ai">✨ Estructurar con IA</button>
+          <button id="btn-copy-command" class="btn-copy">idea-cli init <span id="idea-id-display"></span></button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
