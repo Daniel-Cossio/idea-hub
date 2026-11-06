@@ -1,0 +1,3 @@
+[console_scripts]
+idea-cli = app.cli:app
+ideas-mcp = app.mcp_server:main

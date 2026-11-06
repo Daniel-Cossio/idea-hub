@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "idea-hub"
+version = "0.1.0"
+description = "Sistema Híbrido de Gestión de Ideas con Telegram, Web Kanban y MCP"
+readme = "SPEC.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "aiogram>=3.15.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.6.0",
+    "python-frontmatter>=1.1.0",
+    "pyyaml>=6.0.2",
+    "httpx>=0.28.0",
+    "beautifulsoup4>=4.12.3",
+    "mcp>=1.2.0",
+    "typer>=0.15.0",
+    "python-multipart>=0.0.18",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+]
+
+[project.scripts]
+idea-cli = "app.cli:app"
+ideas-mcp = "app.mcp_server:main"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

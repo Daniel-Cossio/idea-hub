@@ -1,0 +1,11 @@
+.venv/
+.env.local
+data/index.sqlite
+data/index.sqlite-wal
+data/index.sqlite-shm
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.env
+.DS_Store
