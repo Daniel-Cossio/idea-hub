@@ -104,8 +104,8 @@ def update_spec_body(spec_path: Path, new_spec_body: str) -> None:
 def append_capture_log(spec_path: Path, entry_text: str, timestamp: str = "") -> None:
     """Append-only: agrega una entrada a la bitácora de captura."""
     if not timestamp:
-        from datetime import datetime
-        timestamp = datetime.utcnow().isoformat()
+        from datetime import datetime, timezone
+        timestamp = datetime.now(timezone.utc).isoformat()
 
     entry = f"[{timestamp}] {entry_text}\n"
     metadata, spec_body, capture_log = parse_spec_file(spec_path)

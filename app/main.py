@@ -11,6 +11,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic_settings import BaseSettings
 from app.config import Settings
 from app.services.idea_service import IdeaService
+from app.services.ai_service import AIService
+from app.api.routes import router as api_router
 
 
 def _get_settings() -> Settings:
@@ -29,6 +31,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Lifespan: inicializa servicios y arranca el bot (si está configurado)."""
     settings = app.state.settings
     service = app.state.idea_service = _get_idea_service(settings)
+    app.state.structuring_service = AIService(settings)
 
     # Rebuild index on startup (< 50 ms)
     service.index.rebuild_index_from_vault(service.vault_dir)
@@ -59,6 +62,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 app = FastAPI(title="IdeaHub", version="0.1.0", lifespan=lifespan)
 app.state.settings = _get_settings()
+app.state.idea_service = _get_idea_service(app.state.settings)
 
 app.add_middleware(
     CORSMiddleware,
@@ -68,10 +72,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static web files if they exist
-web_dir = Path(__file__).parent.parent / "web"
-if web_dir.exists():
-    app.mount("/", StaticFiles(directory=str(web_dir), html=True), name="web")
+# Register API router before mounting static files (to avoid 404 on /api/*)
+app.include_router(api_router)
 
 
 @app.get("/api/health")
@@ -82,7 +84,7 @@ async def healthcheck() -> dict:
     return {"status": "ok", "ideas_count": count}
 
 
-@app.on_event("startup")
-async def startup() -> None:
-    """Inicializa el servicio de ideas."""
-    app.state.idea_service = _get_idea_service(app.state.settings)
+# Mount static web files if they exist
+web_dir = Path(__file__).parent.parent / "web"
+if web_dir.exists():
+    app.mount("/", StaticFiles(directory=str(web_dir), html=True), name="web")

@@ -54,6 +54,6 @@ class AIService:
             soup = BeautifulSoup(response.text, "html.parser")
             return {
                 "title": soup.title.string if soup.title else "",
-                "description": soup.find("meta", {"name": "description"})?.get("content", ""),
+                "description": soup.find("meta", {"name": "description"}).get("content", "") if soup.find("meta", {"name": "description"}) else "",
                 "content": soup.get_text()[:2000],
             }
