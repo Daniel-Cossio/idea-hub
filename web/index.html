@@ -90,8 +90,14 @@
     <div class="dual-view-panel">
       <button id="btn-close-dual" class="btn-close-panel" title="Cerrar">✕</button>
 
+      <!-- Selector de pestañas para móvil -->
+      <div class="mobile-dual-tabs" id="mobile-dual-tabs">
+        <button type="button" id="tab-log" class="tab-btn active">📋 Bitácora</button>
+        <button type="button" id="tab-editor" class="tab-btn">📝 Editor SPEC</button>
+      </div>
+
       <!-- Columna Izquierda: Bitácora -->
-      <aside class="dual-log-column">
+      <aside class="dual-log-column" id="dual-log-col">
         <h3>📋 Bitácora de Captura</h3>
         <div id="log-entries" class="log-entries"></div>
         <form id="log-form" class="log-form">
@@ -101,7 +107,7 @@
       </aside>
 
       <!-- Columna Derecha: Editor -->
-      <section class="dual-editor-column">
+      <section class="dual-editor-column" id="dual-editor-col">
         <div class="editor-controls">
           <label for="status-select">Estado:</label>
           <select id="status-select" class="status-select"></select>

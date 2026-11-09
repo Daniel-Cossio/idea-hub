@@ -136,6 +136,18 @@
     // Editor
     specEditor.value = idea.spec_body || "";
 
+    // Mobile tabs reset
+    const tabLog = document.getElementById("tab-log");
+    const tabEditor = document.getElementById("tab-editor");
+    const dualLogCol = document.getElementById("dual-log-col");
+    const dualEditorCol = document.getElementById("dual-editor-col");
+    if (tabLog && tabEditor) {
+      tabLog.classList.add("active");
+      tabEditor.classList.remove("active");
+      if (dualLogCol) dualLogCol.classList.remove("mobile-hidden");
+      if (dualEditorCol) dualEditorCol.classList.add("mobile-hidden");
+    }
+
     // Log entries
     logEntries.innerHTML = "";
     if (idea.capture_log) {
@@ -212,6 +224,28 @@
       setTimeout(() => btn.textContent = orig, 1500);
     });
   });
+
+  // --- Mobile Tabs en Dual View ---
+  const tabLogBtn = document.getElementById("tab-log");
+  const tabEditorBtn = document.getElementById("tab-editor");
+  const dualLogColEl = document.getElementById("dual-log-col");
+  const dualEditorColEl = document.getElementById("dual-editor-col");
+
+  if (tabLogBtn && tabEditorBtn) {
+    tabLogBtn.addEventListener("click", () => {
+      tabLogBtn.classList.add("active");
+      tabEditorBtn.classList.remove("active");
+      if (dualLogColEl) dualLogColEl.classList.remove("mobile-hidden");
+      if (dualEditorColEl) dualEditorColEl.classList.add("mobile-hidden");
+    });
+
+    tabEditorBtn.addEventListener("click", () => {
+      tabEditorBtn.classList.add("active");
+      tabLogBtn.classList.remove("active");
+      if (dualEditorColEl) dualEditorColEl.classList.remove("mobile-hidden");
+      if (dualLogColEl) dualLogColEl.classList.add("mobile-hidden");
+    });
+  }
 
   // --- Utilidades ---
   function esc(str) { const d = document.createElement("div"); d.textContent = str; return d.innerHTML; }

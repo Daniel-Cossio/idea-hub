@@ -202,10 +202,10 @@ class SQLiteIndex:
         conn.commit()
 
     def get_idea_id_by_message(self, telegram_msg_id: int) -> Optional[str]:
-        """Busca idea_id por message_id de Telegram en el índice."""
+        """Busca idea_id por message_id o bot_reply_msg_id de Telegram en el índice."""
         row = self._conn.execute(
-            "SELECT idea_id FROM message_mappings WHERE telegram_msg_id = ?",
-            (telegram_msg_id,),
+            "SELECT idea_id FROM message_mappings WHERE telegram_msg_id = ? OR bot_reply_msg_id = ?",
+            (telegram_msg_id, telegram_msg_id),
         ).fetchone()
         return row[0] if row else None
 
