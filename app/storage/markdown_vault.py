@@ -63,8 +63,11 @@ def write_spec_file(
     metadata_str = ""
     for key, value in metadata.items():
         if isinstance(value, list):
-            value_str = "\n  - ".join(str(v) for v in value)
-            metadata_str += f"  {key}:\n    - {value_str}\n"
+            if not value:
+                metadata_str += f"  {key}: []\n"
+            else:
+                items_str = "".join(f"    - {v}\n" for v in value)
+                metadata_str += f"  {key}:\n{items_str}"
         elif isinstance(value, str):
             metadata_str += f"  {key}: {value}\n"
         else:
