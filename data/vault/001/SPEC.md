@@ -2,15 +2,15 @@
   id: 1
   slug: 001-idea-001
   title: Idea 001
-  status: inbox
+  status: archived
   priority: medium
-  tags:
-    - None
-  target_stack:
-    - None
+  tags: []
+  target_stack: []
   created_at: 2026-11-06 19:26:36.582862+00:00
-  updated_at: 2026-11-06 19:26:36.582862+00:00
+  updated_at: 2026-11-09T19:54:01.422316+00:00
   telegram_root_msg_id: None
+  repo_path: 
+  app_url: 
 ---
 
 test
