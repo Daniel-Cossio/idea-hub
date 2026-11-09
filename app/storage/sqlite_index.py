@@ -32,6 +32,7 @@ class SQLiteIndex:
                 tags TEXT DEFAULT '[]',
                 target_stack TEXT DEFAULT '[]',
                 repo_path TEXT DEFAULT '',
+                app_url TEXT DEFAULT '',
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL,
                 telegram_root_msg_id INTEGER,
@@ -55,6 +56,10 @@ class SQLiteIndex:
                 bot_reply_msg_id INTEGER
             )
         """)
+        # Migración suave para columnas nuevas
+        existing_cols = [c[1] for c in conn.execute("PRAGMA table_info(ideas)").fetchall()]
+        if "app_url" not in existing_cols:
+            conn.execute("ALTER TABLE ideas ADD COLUMN app_url TEXT DEFAULT ''")
         conn.commit()
 
     def _upsert_fts(self, idea: IdeaDocument) -> None:
@@ -80,9 +85,9 @@ class SQLiteIndex:
         conn.execute(
             """INSERT OR REPLACE INTO ideas
                (id, slug, title, status, priority, tags, target_stack,
-                repo_path, created_at, updated_at, telegram_root_msg_id,
+                repo_path, app_url, created_at, updated_at, telegram_root_msg_id,
                 spec_body, capture_log)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 idea.id,
                 idea.slug,
@@ -92,6 +97,7 @@ class SQLiteIndex:
                 tags_str,
                 stacks_str,
                 idea.repo_path,
+                getattr(idea, "app_url", "") or "",
                 idea.created_at,
                 idea.updated_at,
                 idea.telegram_root_msg_id,
@@ -157,7 +163,7 @@ class SQLiteIndex:
         # Inserta un placeholder para que el próximo llamado retorne el siguiente
         conn.execute(
             "INSERT INTO ideas (id, slug, title, status, priority, tags, target_stack, "
-            "repo_path, created_at, updated_at) VALUES (?, 'placeholder', 'placeholder', 'inbox', 'medium', '[]', '[]', '', '', '')",
+            "repo_path, app_url, created_at, updated_at) VALUES (?, 'placeholder', 'placeholder', 'inbox', 'medium', '[]', '[]', '', '', '', '')",
             (next_id,),
         )
         conn.commit()
@@ -286,6 +292,7 @@ class SQLiteIndex:
                 tags=tags_clean,
                 target_stack=stack_clean,
                 repo_path=str(metadata.get("repo_path") or ""),
+                app_url=str(metadata.get("app_url") or ""),
                 created_at=created_at,
                 updated_at=updated_at,
                 telegram_root_msg_id=tg_root,
@@ -304,4 +311,6 @@ class SQLiteIndex:
         data = dict(row)
         data["tags"] = json.loads(data["tags"]) if isinstance(data.get("tags"), str) else data.get("tags", [])
         data["target_stack"] = json.loads(data["target_stack"]) if isinstance(data.get("target_stack"), str) else data.get("target_stack", [])
+        if "app_url" not in data or data["app_url"] is None:
+            data["app_url"] = ""
         return IdeaDocument(**data)

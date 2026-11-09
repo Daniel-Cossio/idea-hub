@@ -129,6 +129,11 @@
       
       const priority = idea.priority || "medium";
       const status = idea.status || "inbox";
+      const appBtnHtml = idea.app_url && idea.app_url.trim()
+        ? `<a href="${esc(idea.app_url)}" target="_blank" rel="noopener noreferrer" class="card-app-btn" title="Abrir panel desplegado (${esc(idea.app_url)})" onclick="event.stopPropagation()">
+             <span>🚀</span> Abrir App
+           </a>`
+        : "";
 
       card.innerHTML = `
         <div class="card-header-meta">
@@ -138,6 +143,7 @@
         <div class="card-title">${esc(idea.title || "Sin título")}</div>
         <div class="card-meta">
           <span class="card-badge status-${esc(status)}">${esc(status)}</span>
+          ${appBtnHtml}
         </div>`;
       
       card.addEventListener("click", () => openDualView(idea.id));
@@ -145,6 +151,9 @@
       const colContainer = document.querySelector(`[data-status="${idea.status}"] .column-cards`);
       if (colContainer) colContainer.appendChild(card);
     }
+
+    // Actualizar menú desplegable de aplicaciones en el navbar
+    renderAppsMenu();
 
     // Contadores por columna y píldoras móviles
     for (const col of COLUMNS) {
@@ -160,6 +169,45 @@
       const pillCountEl = document.getElementById(`count-${col}`);
       if (pillCountEl) pillCountEl.textContent = String(count);
     }
+  }
+
+  // --- Render Menú de Apps Desplegadas ---
+  function renderAppsMenu() {
+    const listEl = document.getElementById("apps-menu-list");
+    const countEl = document.getElementById("apps-count-badge");
+    if (!listEl || !countEl) return;
+
+    const deployed = ideas.filter(i => i.app_url && i.app_url.trim() !== "");
+    countEl.textContent = String(deployed.length);
+
+    if (deployed.length === 0) {
+      listEl.innerHTML = '<span class="apps-menu-empty">Sin aplicaciones activas</span>';
+      return;
+    }
+
+    listEl.innerHTML = deployed.map(i => `
+      <a href="${esc(i.app_url)}" target="_blank" rel="noopener noreferrer" class="apps-menu-item" title="${esc(i.title || 'Idea #' + i.id)}">
+        <span class="apps-item-icon">🚀</span>
+        <div class="apps-item-info">
+          <div class="apps-item-title">#${esc(i.id)} ${esc(i.title || "Sin título")}</div>
+          <div class="apps-item-url">${esc(i.app_url)}</div>
+        </div>
+      </a>
+    `).join("");
+  }
+
+  const btnAppsMenu = document.getElementById("btn-apps-menu");
+  const appsMenuDropdown = document.getElementById("apps-menu-dropdown");
+  if (btnAppsMenu && appsMenuDropdown) {
+    btnAppsMenu.addEventListener("click", (e) => {
+      e.stopPropagation();
+      appsMenuDropdown.classList.toggle("hidden");
+    });
+    document.addEventListener("click", (e) => {
+      if (!appsMenuDropdown.contains(e.target) && e.target !== btnAppsMenu) {
+        appsMenuDropdown.classList.add("hidden");
+      }
+    });
   }
 
   // --- Búsqueda en tiempo real ---
@@ -285,6 +333,21 @@
     specEditor.value = idea.spec_body || "";
     if (saveIndicator) saveIndicator.textContent = "Sincronizado";
 
+    // App URL & Banner
+    const appUrlInput = document.getElementById("app-url-input");
+    if (appUrlInput) appUrlInput.value = idea.app_url || "";
+
+    const appBanner = document.getElementById("dual-app-banner");
+    const openAppBtn = document.getElementById("btn-open-deployed-app");
+    if (appBanner && openAppBtn) {
+      if (idea.app_url && idea.app_url.trim()) {
+        openAppBtn.href = idea.app_url;
+        appBanner.classList.remove("hidden");
+      } else {
+        appBanner.classList.add("hidden");
+      }
+    }
+
     // Mobile tabs reset
     const tabLog = document.getElementById("tab-log");
     const tabEditor = document.getElementById("tab-editor");
@@ -376,6 +439,38 @@
       showToast("Error al actualizar prioridad");
     }
   });
+
+  // Cambiar App URL
+  const appUrlInput = document.getElementById("app-url-input");
+  if (appUrlInput) {
+    appUrlInput.addEventListener("blur", async () => {
+      if (!currentIdeaId) return;
+      const val = appUrlInput.value.trim();
+      try {
+        if (saveIndicator) saveIndicator.textContent = "Guardando...";
+        await api(`/ideas/${currentIdeaId}`, { method: "PUT", body: { app_url: val } });
+        if (saveIndicator) saveIndicator.textContent = "✓ Sincronizado";
+        const idea = ideas.find(i => i.id === currentIdeaId);
+        if (idea) idea.app_url = val;
+
+        const appBanner = document.getElementById("dual-app-banner");
+        const openAppBtn = document.getElementById("btn-open-deployed-app");
+        if (appBanner && openAppBtn) {
+          if (val) {
+            openAppBtn.href = val;
+            appBanner.classList.remove("hidden");
+          } else {
+            appBanner.classList.add("hidden");
+          }
+        }
+        renderBoard();
+        showToast("App URL guardada");
+      } catch (err) {
+        if (saveIndicator) saveIndicator.textContent = "Error al guardar";
+        showToast("Error al guardar App URL");
+      }
+    });
+  }
 
   // --- Añadir nota a Bitácora ---
   logForm.addEventListener("submit", async (e) => {

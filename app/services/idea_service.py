@@ -73,6 +73,8 @@ class IdeaService:
             "priority": request.priority.value if isinstance(request.priority, IdeaPriority) else str(request.priority),
             "tags": request.tags,
             "target_stack": [],
+            "repo_path": "",
+            "app_url": getattr(request, "app_url", "") or "",
             "created_at": now,
             "updated_at": now,
             "telegram_root_msg_id": request.telegram_msg_id,
@@ -92,6 +94,7 @@ class IdeaService:
             tags=request.tags,
             target_stack=[],
             repo_path="",
+            app_url=getattr(request, "app_url", "") or "",
             created_at=now,
             updated_at=now,
             telegram_root_msg_id=request.telegram_msg_id,
@@ -144,12 +147,31 @@ class IdeaService:
             idea.target_stack = request.target_stack
         if request.repo_path is not None:
             idea.repo_path = request.repo_path
+        if request.app_url is not None:
+            idea.app_url = request.app_url
         if request.spec_body is not None:
             idea.spec_body = request.spec_body
             update_spec_body(
                 self.vault_dir / idea_id / "SPEC.md",
                 request.spec_body,
             )
+
+        # Sincronizar metadatos en SPEC.md
+        meta_updates = {
+            "title": idea.title,
+            "slug": idea.slug,
+            "status": idea.status.value,
+            "priority": idea.priority.value,
+            "tags": idea.tags,
+            "target_stack": idea.target_stack,
+            "repo_path": idea.repo_path,
+            "app_url": idea.app_url,
+            "updated_at": self._get_now(),
+        }
+        spec_file = self.vault_dir / idea_id / "SPEC.md"
+        if spec_file.exists():
+            from app.storage.markdown_vault import update_spec_metadata
+            update_spec_metadata(spec_file, meta_updates)
 
         idea.updated_at = self._get_now()
         self.index.upsert_idea_index(idea)

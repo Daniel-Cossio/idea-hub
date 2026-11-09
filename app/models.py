@@ -30,6 +30,7 @@ class IdeaDocument(BaseModel):
     tags: List[str] = Field(default_factory=list)
     target_stack: List[str] = Field(default_factory=list)
     repo_path: str = ""
+    app_url: str = ""
     created_at: str
     updated_at: str
     telegram_root_msg_id: Optional[int] = None
@@ -43,6 +44,7 @@ class IdeaCreateRequest(BaseModel):
     source_type: str = "text"  # text | voice | link | web
     tags: List[str] = Field(default_factory=list)
     priority: IdeaPriority = IdeaPriority.MEDIUM
+    app_url: str = ""
     telegram_msg_id: Optional[int] = None
 
 
@@ -53,6 +55,7 @@ class IdeaUpdateRequest(BaseModel):
     tags: Optional[List[str]] = None
     target_stack: Optional[List[str]] = None
     repo_path: Optional[str] = None
+    app_url: Optional[str] = None
     spec_body: Optional[str] = None
 
 

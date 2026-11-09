@@ -304,3 +304,15 @@ class TestIdeaService:
         log_req = IdeaLogAppendRequest(entry_text="New note", source_type="note")
         updated = service.append_log_entry("001", log_req)
         assert "New note" in updated.capture_log
+
+    def test_update_idea_app_url(self, service):
+        """Actualiza y persiste app_url de una idea desplegada."""
+        req = IdeaCreateRequest(raw_input="Panel test", source_type="text")
+        service.create_idea(req)
+        update = IdeaUpdateRequest(app_url="http://localhost:8085")
+        updated = service.update_idea("001", update)
+        assert updated.app_url == "http://localhost:8085"
+
+        retrieved = service.get_idea("001")
+        assert retrieved is not None
+        assert retrieved.app_url == "http://localhost:8085"

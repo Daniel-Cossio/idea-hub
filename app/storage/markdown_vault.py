@@ -101,6 +101,15 @@ def update_spec_body(spec_path: Path, new_spec_body: str) -> None:
     write_spec_file(spec_path, metadata, new_spec_body, capture_log)
 
 
+def update_spec_metadata(spec_path: Path, updates: dict) -> None:
+    """Actualiza campos del YAML Frontmatter preservando spec_body y capture_log."""
+    if not spec_path.exists():
+        return
+    metadata, spec_body, capture_log = parse_spec_file(spec_path)
+    metadata.update(updates)
+    write_spec_file(spec_path, metadata, spec_body, capture_log)
+
+
 def append_capture_log(spec_path: Path, entry_text: str, timestamp: str = "") -> None:
     """Append-only: agrega una entrada a la bitácora de captura."""
     if not timestamp:

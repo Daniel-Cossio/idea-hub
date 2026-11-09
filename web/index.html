@@ -40,6 +40,18 @@
       </button>
 
       <div class="header-controls">
+        <div class="apps-dropdown-wrapper" id="apps-dropdown-wrapper">
+          <button id="btn-apps-menu" class="btn-apps" title="Aplicaciones y Paneles de Ideas" aria-label="Aplicaciones desplegadas">
+            <span class="btn-icon">🚀</span> <span class="btn-text">Apps</span> <span class="apps-count-badge" id="apps-count-badge">0</span>
+          </button>
+          <div id="apps-menu-dropdown" class="apps-menu-dropdown hidden">
+            <div class="apps-menu-header">Paneles Desplegados</div>
+            <div id="apps-menu-list" class="apps-menu-list">
+              <span class="apps-menu-empty">Sin aplicaciones activas</span>
+            </div>
+          </div>
+        </div>
+
         <div class="search-wrapper">
           <span class="search-icon">🔍</span>
           <input type="text" id="search-input" class="search-input" placeholder="Buscar idea... (?q=)" aria-label="Buscar idea">
@@ -212,7 +224,17 @@
               <label for="priority-select">Prioridad:</label>
               <select id="priority-select" class="priority-select"></select>
             </div>
+            <div class="control-item">
+              <label for="app-url-input">App URL:</label>
+              <input type="url" id="app-url-input" class="app-url-input" placeholder="http://... (panel)" title="URL de la aplicación o panel desplegado" />
+            </div>
             <div class="save-indicator" id="save-indicator">Sincronizado</div>
+          </div>
+          
+          <div class="dual-app-banner hidden" id="dual-app-banner">
+            <a id="btn-open-deployed-app" href="#" target="_blank" class="btn-open-app" rel="noopener noreferrer">
+              🚀 Abrir Aplicación Desplegada
+            </a>
           </div>
           
           <textarea id="spec-editor" class="spec-editor" placeholder="Especificación Markdown (SPEC.md)..." aria-label="Editor SPEC.md"></textarea>
