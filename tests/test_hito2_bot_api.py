@@ -56,7 +56,7 @@ class TestRoutes:
         sqlite_path = str(tmp_path / "data" / "index.sqlite")
         service = IdeaService(data_dir=data_dir, sqlite_path=sqlite_path)
         app.state.idea_service = service
-        app.state.settings = Settings()
+        app.state.settings = Settings(api_token="", disable_bot_polling=True)
         app.include_router(api_router)
         return app
 
@@ -188,7 +188,7 @@ class TestEndpointFilters:
         sqlite_path = str(tmp_path / "data" / "index.sqlite")
         service = IdeaService(data_dir=data_dir, sqlite_path=sqlite_path)
         app.state.idea_service = service
-        app.state.settings = Settings()
+        app.state.settings = Settings(api_token="", disable_bot_polling=True)
         app.include_router(api_router)
         return app
 

@@ -50,7 +50,9 @@ class IdeaService:
         self.vault_dir = Path(data_dir) / "vault"
         self.vault_dir.mkdir(parents=True, exist_ok=True)
         self.index = SQLiteIndex(sqlite_path)
-        self._now = datetime.now(timezone.utc)
+
+    def _get_now(self) -> str:
+        return datetime.now(timezone.utc).isoformat()
 
     # ------------------------------------------------------------------
     # Creación de ideas
@@ -59,7 +61,7 @@ class IdeaService:
         """Genera el siguiente ID correlativo (001, 002...), escribe SPEC.md e indexa."""
         idea_id = self.index.get_next_id()
         slug = generate_slug(request.title or f"Idea {idea_id}", idea_id)
-        now = self._now.isoformat()
+        now = self._get_now()
 
         capture_entry = f"[{now}] Captura inicial ({request.source_type}): {request.raw_input}"
 
@@ -67,7 +69,7 @@ class IdeaService:
             "id": idea_id,
             "slug": slug,
             "title": request.title or f"Idea {idea_id}",
-            "status": request.source_type,
+            "status": IdeaStatus.INBOX.value,
             "priority": request.priority.value if isinstance(request.priority, IdeaPriority) else str(request.priority),
             "tags": request.tags,
             "target_stack": [],
@@ -149,7 +151,7 @@ class IdeaService:
                 request.spec_body,
             )
 
-        idea.updated_at = self._now.isoformat()
+        idea.updated_at = self._get_now()
         self.index.upsert_idea_index(idea)
         return idea
 
@@ -180,7 +182,7 @@ class IdeaService:
         """Actualiza el estado de una idea."""
         idea = self.index.set_idea_status(idea_id, status)
         idea.status = status
-        idea.updated_at = self._now.isoformat()
+        idea.updated_at = self._get_now()
         self.index.upsert_idea_index(idea)
         return idea
 
@@ -190,7 +192,7 @@ class IdeaService:
         if idea is None:
             raise ValueError(f"Idea {idea_id} no encontrada")
         idea.priority = priority
-        idea.updated_at = self._now.isoformat()
+        idea.updated_at = self._get_now()
         spec_path = self.vault_dir / idea_id / "SPEC.md"
         metadata, spec_body, capture_log = parse_spec_file(spec_path)
         metadata["priority"] = priority.value
@@ -231,7 +233,7 @@ class IdeaService:
         # Actualizar estado
         idea.status = IdeaStatus.IN_PROGRESS
         idea.repo_path = str(project_dir)
-        idea.updated_at = self._now.isoformat()
+        idea.updated_at = self._get_now()
         self.index.upsert_idea_index(idea)
 
         return {

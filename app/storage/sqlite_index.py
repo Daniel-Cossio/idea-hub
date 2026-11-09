@@ -237,26 +237,58 @@ class SQLiteIndex:
 
             idea_id = spec_dir.name.split("-")[0] if "-" in spec_dir.name else spec_dir.name
             slug = metadata.get("slug", f"{idea_id}-uncategorized")
-            title = metadata.get("title", f"Idea {idea_id}")
+            title = str(metadata.get("title") or f"Idea {idea_id}")
             status_val = metadata.get("status", "inbox")
             priority_val = metadata.get("priority", "medium")
             tags = metadata.get("tags", [])
             target_stack = metadata.get("target_stack", [])
-            created_at = metadata.get("created_at", "")
-            updated_at = metadata.get("updated_at", "")
+
+            created_raw = metadata.get("created_at")
+            if hasattr(created_raw, "isoformat"):
+                created_at = created_raw.isoformat()
+            else:
+                created_at = str(created_raw or "")
+
+            updated_raw = metadata.get("updated_at")
+            if hasattr(updated_raw, "isoformat"):
+                updated_at = updated_raw.isoformat()
+            else:
+                updated_at = str(updated_raw or "")
+
+            tg_root = metadata.get("telegram_root_msg_id")
+            if tg_root is None or tg_root == "None" or tg_root == "":
+                tg_root = None
+            else:
+                try:
+                    tg_root = int(tg_root)
+                except (ValueError, TypeError):
+                    tg_root = None
+
+            tags_clean = [str(t) for t in tags if t is not None and str(t) != "None"] if isinstance(tags, list) else []
+            stack_clean = [str(s) for s in target_stack if s is not None and str(s) != "None"] if isinstance(target_stack, list) else []
+
+            try:
+                status_enum = IdeaStatus(status_val)
+            except (ValueError, TypeError):
+                status_enum = IdeaStatus.INBOX
+
+            try:
+                priority_enum = IdeaPriority(priority_val)
+            except (ValueError, TypeError):
+                priority_enum = IdeaPriority.MEDIUM
 
             idea = IdeaDocument(
                 id=idea_id,
                 slug=slug,
                 title=title,
-                status=IdeaStatus(status_val),
-                priority=IdeaPriority(priority_val),
-                tags=tags if isinstance(tags, list) else [],
-                target_stack=target_stack if isinstance(target_stack, list) else [],
-                repo_path=metadata.get("repo_path", ""),
+                status=status_enum,
+                priority=priority_enum,
+                tags=tags_clean,
+                target_stack=stack_clean,
+                repo_path=str(metadata.get("repo_path") or ""),
                 created_at=created_at,
                 updated_at=updated_at,
-                telegram_root_msg_id=metadata.get("telegram_root_msg_id"),
+                telegram_root_msg_id=tg_root,
                 spec_body=data["spec_body"],
                 capture_log=data["capture_log"],
             )

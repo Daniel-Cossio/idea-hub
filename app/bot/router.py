@@ -161,6 +161,10 @@ def create_bot_router(settings) -> Router:
     return bot_router
 
 
+# Router por defecto para compatibilidad
+bot_router = create_bot_router(None)
+
+
 # Helpers para tests
 async def create_test_bot(tmp_path: Path) -> Bot:
     """Crea un Bot de test con token dummy."""

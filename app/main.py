@@ -37,26 +37,28 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     service.index.rebuild_index_from_vault(service.vault_dir)
 
     # Arrancar bot polling en el mismo bucle asyncio (aiogram 3.x)
+    bot = None
+    bot_task = None
     if settings.telegram_bot_token and not settings.disable_bot_polling:
         from aiogram import Bot, Dispatcher
-        from app.bot.router import bot_router
+        from app.bot.router import create_bot_router
 
         bot = Bot(token=settings.telegram_bot_token)
         dp = Dispatcher()
-        dp.include_router(bot_router)
+        dp.include_router(create_bot_router(settings))
 
         async def start_bot() -> None:
-            from aiogram.client.session.aiohttp import AiohttpSession
-            import aiohttp
-            session = AiohttpSession(allocator=aiohttp.TCPConnector())
-            bot._session = session
-            await dp.start_polling(bot)
+            await dp.start_polling(bot, handle_signals=False)
 
-        asyncio.create_task(start_bot())
+        bot_task = asyncio.create_task(start_bot())
 
     yield
 
     # Cleanup
+    if bot_task:
+        bot_task.cancel()
+    if bot:
+        await bot.session.close()
     service.index.close()
 
 
