@@ -1,8 +1,17 @@
 pyproject.toml
 app/__init__.py
+app/cli.py
 app/config.py
 app/main.py
+app/mcp_server.py
 app/models.py
+app/api/__init__.py
+app/api/auth.py
+app/api/routes.py
+app/bot/__init__.py
+app/bot/keyboards.py
+app/bot/middlewares.py
+app/bot/router.py
 app/services/__init__.py
 app/services/ai_service.py
 app/services/idea_service.py
@@ -16,3 +25,6 @@ idea_hub.egg-info/entry_points.txt
 idea_hub.egg-info/requires.txt
 idea_hub.egg-info/top_level.txt
 tests/test_hito1_core.py
+tests/test_hito2_bot_api.py
+tests/test_hito3_mcp_cli.py
+tests/test_hito4_web.py

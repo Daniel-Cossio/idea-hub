@@ -2,19 +2,22 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="description" content="IdeaHub — Sistema Híbrido de Gestión de Ideas con Telegram y Web Kanban">
   <title>IdeaHub — Tablero Kanban</title>
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=2">
 </head>
 <body>
 
   <!-- Pantalla de Login -->
   <div id="login-screen" class="screen">
     <div class="login-card">
-      <h1>🧠 IdeaHub</h1>
+      <div class="brand-badge">🧠</div>
+      <h1>IdeaHub</h1>
       <p class="subtitle">Gestión de Ideas de Proyectos</p>
       <form id="login-form">
-        <input type="password" id="password-input" placeholder="Contraseña" required autofocus>
+        <input type="password" id="password-input" placeholder="Contraseña de acceso" required autofocus autocomplete="current-password">
         <button type="submit" class="btn-primary">Iniciar Sesión</button>
       </form>
       <p id="login-error" class="error hidden">Contraseña incorrecta</p>
@@ -22,107 +25,213 @@
   </div>
 
   <!-- Tablero Kanban -->
-  <div id="kanban-screen" class="screen hidden">
+  <div id="kanban-screen" class="screen kanban-screen hidden">
     <header class="kanban-header">
-      <h1>🧠 IdeaHub</h1>
+      <div class="brand-group">
+        <span class="brand-icon">🧠</span>
+        <div class="brand-info">
+          <h1>IdeaHub</h1>
+          <span class="brand-tag">ARM64 Hub</span>
+        </div>
+      </div>
+      
+      <button id="btn-logout" class="btn-logout" title="Cerrar sesión" aria-label="Cerrar sesión">
+        <span class="logout-icon">✕</span>
+      </button>
+
       <div class="header-controls">
-        <input type="text" id="search-input" class="search-input" placeholder="Buscar idea... (?q=)" aria-label="Buscar">
-        <button id="btn-new-idea" class="btn-primary btn-new">+ Nueva Idea</button>
-        <button id="btn-logout" class="btn-logout" title="Cerrar sesión">✕</button>
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" class="search-input" placeholder="Buscar idea... (?q=)" aria-label="Buscar idea">
+        </div>
+        <button id="btn-new-idea" class="btn-primary btn-new" title="Crear nueva idea">
+          <span class="btn-icon">+</span> <span class="btn-text">Nueva Idea</span>
+        </button>
       </div>
     </header>
 
+    <!-- Barra de Píldoras para Móvil (Selector Rápido de Columnas) -->
+    <nav id="mobile-column-nav" class="mobile-column-nav" aria-label="Fases de Ideas">
+      <button type="button" class="col-pill active" data-col="inbox">
+        <span class="pill-icon">📥</span> Inbox <span class="pill-count" id="count-inbox">0</span>
+      </button>
+      <button type="button" class="col-pill" data-col="refining">
+        <span class="pill-icon">🔍</span> Refining <span class="pill-count" id="count-refining">0</span>
+      </button>
+      <button type="button" class="col-pill" data-col="agent_ready">
+        <span class="pill-icon">⚡</span> Ready <span class="pill-count" id="count-agent_ready">0</span>
+      </button>
+      <button type="button" class="col-pill" data-col="in_progress">
+        <span class="pill-icon">🚀</span> Progress <span class="pill-count" id="count-in_progress">0</span>
+      </button>
+      <button type="button" class="col-pill" data-col="done">
+        <span class="pill-icon">✅</span> Done <span class="pill-count" id="count-done">0</span>
+      </button>
+      <button type="button" class="col-pill" data-col="archived">
+        <span class="pill-icon">📦</span> Archived <span class="pill-count" id="count-archived">0</span>
+      </button>
+    </nav>
+
+    <!-- Tablero Principal -->
     <main id="kanban-board" class="kanban-board">
-      <div class="kanban-column" data-status="inbox" id="col-inbox">
+      <section class="kanban-column" data-status="inbox" id="col-inbox">
         <div class="column-header">
           <span class="column-icon">📥</span>
           <h2>Inbox</h2>
           <span class="column-count">0</span>
         </div>
         <div class="column-cards"></div>
-      </div>
-      <div class="kanban-column" data-status="refining" id="col-refining">
+        <div class="column-empty-state">No hay ideas en Inbox</div>
+      </section>
+
+      <section class="kanban-column" data-status="refining" id="col-refining">
         <div class="column-header">
           <span class="column-icon">🔍</span>
           <h2>Refining</h2>
           <span class="column-count">0</span>
         </div>
         <div class="column-cards"></div>
-      </div>
-      <div class="kanban-column" data-status="agent_ready" id="col-agent_ready">
+        <div class="column-empty-state">No hay ideas en Refinamiento</div>
+      </section>
+
+      <section class="kanban-column" data-status="agent_ready" id="col-agent_ready">
         <div class="column-header">
           <span class="column-icon">⚡</span>
           <h2>Agent Ready</h2>
           <span class="column-count">0</span>
         </div>
         <div class="column-cards"></div>
-      </div>
-      <div class="kanban-column" data-status="in_progress" id="col-in_progress">
+        <div class="column-empty-state">No hay ideas listas para agente</div>
+      </section>
+
+      <section class="kanban-column" data-status="in_progress" id="col-in_progress">
         <div class="column-header">
           <span class="column-icon">🚀</span>
           <h2>In Progress</h2>
           <span class="column-count">0</span>
         </div>
         <div class="column-cards"></div>
-      </div>
-      <div class="kanban-column" data-status="done" id="col-done">
+        <div class="column-empty-state">No hay ideas en progreso</div>
+      </section>
+
+      <section class="kanban-column" data-status="done" id="col-done">
         <div class="column-header">
           <span class="column-icon">✅</span>
           <h2>Done</h2>
           <span class="column-count">0</span>
         </div>
         <div class="column-cards"></div>
-      </div>
-      <div class="kanban-column" data-status="archived" id="col-archived">
+        <div class="column-empty-state">No hay ideas completadas</div>
+      </section>
+
+      <section class="kanban-column" data-status="archived" id="col-archived">
         <div class="column-header">
           <span class="column-icon">📦</span>
           <h2>Archived</h2>
           <span class="column-count">0</span>
         </div>
         <div class="column-cards"></div>
-      </div>
+        <div class="column-empty-state">No hay ideas archivadas</div>
+      </section>
     </main>
   </div>
 
-  <!-- Panel Vista Dual -->
-  <div id="dual-view" class="dual-view-overlay hidden">
-    <div class="dual-view-backdrop" id="dual-view-backdrop"></div>
-    <div class="dual-view-panel">
-      <button id="btn-close-dual" class="btn-close-panel" title="Cerrar">✕</button>
-
-      <!-- Selector de pestañas para móvil -->
-      <div class="mobile-dual-tabs" id="mobile-dual-tabs">
-        <button type="button" id="tab-log" class="tab-btn active">📋 Bitácora</button>
-        <button type="button" id="tab-editor" class="tab-btn">📝 Editor SPEC</button>
+  <!-- Modal para Nueva Idea -->
+  <div id="new-idea-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-new-title">
+    <div class="modal-backdrop" id="new-idea-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-new-title">💡 Nueva Idea</h3>
+        <button type="button" id="btn-close-new-modal" class="btn-close-modal" aria-label="Cerrar">✕</button>
       </div>
-
-      <!-- Columna Izquierda: Bitácora -->
-      <aside class="dual-log-column" id="dual-log-col">
-        <h3>📋 Bitácora de Captura</h3>
-        <div id="log-entries" class="log-entries"></div>
-        <form id="log-form" class="log-form">
-          <input type="text" id="log-entry-input" placeholder="Añadir nota rápida..." aria-label="Nueva nota">
-          <button type="submit" class="btn-small">✓</button>
-        </form>
-      </aside>
-
-      <!-- Columna Derecha: Editor -->
-      <section class="dual-editor-column" id="dual-editor-col">
-        <div class="editor-controls">
-          <label for="status-select">Estado:</label>
-          <select id="status-select" class="status-select"></select>
-          <label for="priority-select">Prioridad:</label>
-          <select id="priority-select" class="priority-select"></select>
+      <form id="new-idea-form" class="modal-body">
+        <label for="new-idea-input" class="form-label">Describe tu idea, nota o requerimiento:</label>
+        <textarea id="new-idea-input" class="modal-textarea" rows="4" placeholder="Ej: Sistema de sincronización de notas offline para Android..." required></textarea>
+        
+        <div class="form-row">
+          <label for="new-idea-priority" class="form-label">Prioridad inicial:</label>
+          <select id="new-idea-priority" class="priority-select">
+            <option value="low">Baja (low)</option>
+            <option value="medium" selected>Media (medium)</option>
+            <option value="high">Alta (high)</option>
+            <option value="critical">Crítica (critical)</option>
+          </select>
         </div>
-        <textarea id="spec-editor" class="spec-editor" placeholder="Especificación Markdown..." aria-label="Editor SPEC.md"></textarea>
-        <div class="editor-actions">
-          <button id="btn-ai-structure" class="btn-ai">✨ Estructurar con IA</button>
-          <button id="btn-copy-command" class="btn-copy">idea-cli init <span id="idea-id-display"></span></button>
+
+        <div class="modal-actions">
+          <button type="button" id="btn-cancel-new-modal" class="btn-secondary">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar Idea</button>
         </div>
-      </section>
+      </form>
     </div>
   </div>
 
-  <script src="/app.js"></script>
+  <!-- Panel Vista Dual -->
+  <div id="dual-view" class="dual-view-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="dual-idea-title">
+    <div class="dual-view-backdrop" id="dual-view-backdrop"></div>
+    <div class="dual-view-panel">
+      
+      <!-- Cabecera Superior de la Vista Dual -->
+      <header class="dual-view-header">
+        <div class="dual-header-meta">
+          <span class="idea-id-chip">#<span id="idea-id-display">001</span></span>
+          <h2 id="dual-idea-title" class="dual-idea-title">Detalle de la Idea</h2>
+        </div>
+        <button id="btn-close-dual" class="btn-close-panel" title="Cerrar" aria-label="Cerrar ventana">✕</button>
+      </header>
+
+      <!-- Selector de pestañas para móvil -->
+      <div class="mobile-dual-tabs" id="mobile-dual-tabs" role="tablist">
+        <button type="button" id="tab-log" class="tab-btn active" role="tab" aria-selected="true">📋 Bitácora</button>
+        <button type="button" id="tab-editor" class="tab-btn" role="tab" aria-selected="false">📝 Editor SPEC</button>
+      </div>
+
+      <!-- Contenedor Principal de Columnas Duales -->
+      <div class="dual-content-container">
+        <!-- Columna Izquierda: Bitácora -->
+        <aside class="dual-log-column" id="dual-log-col">
+          <div class="column-subheading">
+            <h3>📋 Bitácora de Capturas</h3>
+            <span class="log-hint">Audios, Telegram y notas</span>
+          </div>
+          <div id="log-entries" class="log-entries"></div>
+          <form id="log-form" class="log-form">
+            <input type="text" id="log-entry-input" placeholder="Añadir nota rápida..." aria-label="Nueva nota">
+            <button type="submit" class="btn-small" title="Enviar nota">✓</button>
+          </form>
+        </aside>
+
+        <!-- Columna Derecha: Editor -->
+        <section class="dual-editor-column" id="dual-editor-col">
+          <div class="editor-controls">
+            <div class="control-item">
+              <label for="status-select">Estado:</label>
+              <select id="status-select" class="status-select"></select>
+            </div>
+            <div class="control-item">
+              <label for="priority-select">Prioridad:</label>
+              <select id="priority-select" class="priority-select"></select>
+            </div>
+            <div class="save-indicator" id="save-indicator">Sincronizado</div>
+          </div>
+          
+          <textarea id="spec-editor" class="spec-editor" placeholder="Especificación Markdown (SPEC.md)..." aria-label="Editor SPEC.md"></textarea>
+          
+          <div class="editor-actions">
+            <button id="btn-ai-structure" class="btn-ai" title="Organizar automáticamente con IA">✨ Estructurar con IA</button>
+            <button id="btn-copy-command" class="btn-copy" title="Copiar comando de terminal">
+              idea-cli init <span id="copy-cmd-id"></span>
+            </button>
+          </div>
+        </section>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notificaciones -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script src="/app.js?v=2"></script>
 </body>
 </html>
