@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "idea-hub"
 version = "0.1.0"
 description = "Sistema Híbrido de Gestión de Ideas con Telegram, Web Kanban y MCP"
-readme = "SPEC.md"
+readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115.0",
